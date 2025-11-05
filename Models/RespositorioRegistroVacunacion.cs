@@ -49,8 +49,7 @@ public class RepositorioRegistroVacunacion : RepositorioBase, IRepositorioRegist
         using (var connection = new MySqlConnection(connectionString))
         {
             var sql = "SELECT * FROM RegistrosVacunacion WHERE RegistroID = @Id";
-            // Aquí un JOIN más complejo sería necesario para traer todos los datos
-            // Por simplicidad, solo traigo el registro.
+           
             return connection.QueryFirstOrDefault<RegistroVacunacion>(sql, new { Id = id });
         }
     }
@@ -59,7 +58,6 @@ public class RepositorioRegistroVacunacion : RepositorioBase, IRepositorioRegist
     {
         using (var connection = new MySqlConnection(connectionString))
         {
-            // Este JOIN es el más complejo y completo
             var sql = @"
                 SELECT r.*, a.*, u.*, v.*, e.*
                 FROM RegistrosVacunacion r
@@ -87,7 +85,6 @@ public class RepositorioRegistroVacunacion : RepositorioBase, IRepositorioRegist
     {
         using (var connection = new MySqlConnection(connectionString))
         {
-            // Similar al anterior, pero filtrado por alumno
             var sql = @"
                 SELECT r.*, a.*, u.*, v.*, e.*
                 FROM RegistrosVacunacion r
