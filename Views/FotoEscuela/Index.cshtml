@@ -1,0 +1,47 @@
+@model IEnumerable<FotoEscuela>
+
+@{
+    ViewData["Title"] = "Fotos de Escuelas";
+}
+
+<h1>Fotos de Escuelas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FotoURL)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Escuela)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <img src="@item.FotoURL" alt="Foto de la escuela" style="max-width: 200px;" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Escuela.Nombre)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.FotoID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.FotoID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.FotoID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

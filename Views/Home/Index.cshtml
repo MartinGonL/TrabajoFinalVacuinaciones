@@ -2,7 +2,46 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Bienvenido al Sistema de Gestión de Vacunación Escolar</h1>
+        <p class="lead">Esta aplicación le permite gestionar alumnos, escuelas, vacunas y registros de vacunación de una manera sencilla y eficiente.</p>
+        <hr class="my-4">
+        <p>Utilice la barra de navegación para acceder a las diferentes secciones.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Alumnos</h5>
+                    <p class="card-text">Gestione la información de los alumnos, incluyendo sus datos personales y la escuela a la que asisten.</p>
+                    <a asp-controller="Alumno" asp-action="Index" class="btn btn-primary">Ir a Alumnos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Escuelas</h5>
+                    <p class="card-text">Administre las escuelas, su información de contacto y las fotos asociadas.</p>
+                    <a asp-controller="Escuela" asp-action="Index" class="btn btn-primary">Ir a Escuelas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Vacunación</h5>
+                    <p class="card-text">Lleve un registro de las vacunas aplicadas a los alumnos, las dosis y las fechas de aplicación.</p>
+                    <a asp-controller="RegistroVacunacion" asp-action="Index" class="btn btn-primary">Ir a Registros</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+

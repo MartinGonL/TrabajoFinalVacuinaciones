@@ -3,26 +3,25 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("MySql");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'MySql' no encontrada. Verifica appsettings.json y el entorno.");
+}
+
 builder.Services.AddControllersWithViews();
 
-// ------------------- Repositorios -------------------
-// Registramos todos los repositorios de la app de vacunación
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddSingleton<string>(connectionString);
+// Repositorios con fábrica para pasar connectionString
+builder.Services.AddTransient<IRepositorioUsuario>(sp => new RepositorioUsuario(connectionString));
+builder.Services.AddTransient<IRepositorioEscuela>(sp => new RepositorioEscuela(connectionString));
+builder.Services.AddTransient<IRepositorioFotoEscuela>(sp => new RepositorioFotoEscuela(connectionString));
+builder.Services.AddTransient<IRepositorioAlumno>(sp => new RepositorioAlumno(connectionString));
+builder.Services.AddTransient<IRepositorioVacuna>(sp => new RepositorioVacuna(connectionString));
+builder.Services.AddTransient<IRepositorioRegistroVacunacion>(sp => new RepositorioRegistroVacunacion(connectionString));
 
-builder.Services.AddTransient<IRepositorioUsuario, RepositorioUsuario>();
-builder.Services.AddTransient<IRepositorioEscuela, RepositorioEscuela>();
-builder.Services.AddTransient<IRepositorioFotoEscuela, RepositorioFotoEscuela>();
-builder.Services.AddTransient<IRepositorioAlumno, RepositorioAlumno>();
-builder.Services.AddTransient<IRepositorioVacuna, RepositorioVacuna>();
-builder.Services.AddTransient<IRepositorioRegistroVacunacion, RepositorioRegistroVacunacion>();
-
-// ------------------- Autenticación -------------------
-// Registramos el servicio de Auth personalizado
+// Auth service
 builder.Services.AddTransient<IAuthService, AuthService>();
 
-// Configuración de Autenticación por Cookies 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -34,32 +33,32 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;        
     });
 
-// Configurar políticas de autorización
 builder.Services.AddAuthorization(options =>
 {
-    // Política para administradores solamente
-    options.AddPolicy("Administrador", policy => 
-        policy.RequireRole("Admin")); // Tu BD usa el rol "Admin"
+    options.AddPolicy("Administrador", policy => policy.RequireRole("Admin"));
 });
-//---------------------------------------------------//
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
+Console.WriteLine($"Aplicación arrancada. Entorno: {app.Environment.EnvironmentName}");
+
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Necesario para servir CSS, JS y los avatares/fotos subidos
+app.UseStaticFiles();
 
 app.UseRouting();
 
-// IMPORTANTE: El orden aquí es crucial
-app.UseAuthentication(); // 1. Identifica quién es el usuario
-app.UseAuthorization();  // 2. Verifica si tiene permiso
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

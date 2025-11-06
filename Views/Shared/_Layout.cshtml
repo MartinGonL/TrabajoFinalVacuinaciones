@@ -23,10 +23,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestion
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Alumno" asp-action="Index">Alumnos</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Escuela" asp-action="Index">Escuelas</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Vacuna" asp-action="Index">Vacunas</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="RegistroVacunacion" asp-action="Index">Registros de Vacunación</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="Index">Usuarios</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="FotoEscuela" asp-action="Index">Fotos de Escuelas</a></li>
+                            </ul>
                         </li>
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
