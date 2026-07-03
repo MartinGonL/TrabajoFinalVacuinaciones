@@ -35,6 +35,19 @@ public class UsuarioController : Controller
         return View(usuario);
     }
 
+    // GET: /Usuario/Profile
+    public IActionResult Profile()
+    {
+        var claimId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(claimId)) return RedirectToAction("Login", "Auth");
+        
+        int id = Convert.ToInt32(claimId);
+        var usuario = _repositorioUsuario.ObtenerPorId(id);
+        if (usuario == null) return NotFound();
+        
+        return View("Details", usuario);
+    }
+
     // GET: /Usuario/Create
     [AllowAnonymous]
     public IActionResult Create()
@@ -131,7 +144,7 @@ public class UsuarioController : Controller
     public IActionResult Edit(int id)
     {
         
-        if (!User.IsInRole("Admin") && Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)) != id)
+        if (!User.IsInRole("Administrador") && Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)) != id)
         {
             return RedirectToAction("AccesoDenegado", "Home");
         }
@@ -148,7 +161,7 @@ public class UsuarioController : Controller
     public IActionResult Edit(int id, Usuario usuario, string? newPassword)
     {
         
-         if (!User.IsInRole("Admin") && Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)) != id)
+         if (!User.IsInRole("Administrador") && Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)) != id)
         {
             return RedirectToAction("AccesoDenegado", "Home");
         }
@@ -156,7 +169,7 @@ public class UsuarioController : Controller
         try
         {
             
-            if (!User.IsInRole("Admin"))
+            if (!User.IsInRole("Administrador"))
             {
                 var usuarioActual = _repositorioUsuario.ObtenerPorId(id);
                 usuario.Rol = usuarioActual.Rol; 

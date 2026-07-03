@@ -16,9 +16,17 @@ public class EscuelaController : Controller
     }
 
     // GET: /Escuela
-    public IActionResult Index()
+    public IActionResult Index(string? buscar)
     {
-        var lista = _repoEscuela.ObtenerTodos();
+        IEnumerable<Escuela> lista;
+        if (!string.IsNullOrEmpty(buscar))
+        {
+            lista = _repoEscuela.BuscarPorNombre(buscar);
+        }
+        else
+        {
+            lista = _repoEscuela.ObtenerTodos();
+        }
         return View(lista);
     }
 

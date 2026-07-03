@@ -1,47 +1,134 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="container">
-    <div class="jumbotron text-center">
-        <h1 class="display-4">Bienvenido al Sistema de Gestión de Vacunación Escolar</h1>
-        <p class="lead">Esta aplicación le permite gestionar alumnos, escuelas, vacunas y registros de vacunación de una manera sencilla y eficiente.</p>
-        <hr class="my-4">
-        <p>Utilice la barra de navegación para acceder a las diferentes secciones.</p>
-    </div>
+<div class="container py-4">
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="p-5 mb-4 bg-white rounded-3 shadow-sm border">
+            <div class="container-fluid py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold text-primary">¡Bienvenido, @(User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? User.Identity.Name)!</h1>
+                        <p class="col-md-11 fs-5 text-muted mt-3">
+                            Has ingresado como <strong class="text-secondary">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong>. 
+                            Desde aquí puedes gestionar el calendario de inmunización escolar de forma eficiente.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-center d-none d-md-block">
+                        <img src="@(User.FindFirst("AvatarURL")?.Value ?? "/uploads/avatars/default.png")" 
+                             alt="Avatar" 
+                             class="img-fluid rounded-circle border shadow" 
+                             style="width: 150px; height: 150px; object-fit: cover;" />
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Alumnos</h5>
-                    <p class="card-text">Gestione la información de los alumnos, incluyendo sus datos personales y la escuela a la que asisten.</p>
-                    <a asp-controller="Alumno" asp-action="Index" class="btn btn-primary">Ir a Alumnos</a>
+        <h3 class="fw-bold mb-4 text-dark text-opacity-75">Accesos Rápidos</h3>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-primary">📋 Gestión de Alumnos</h5>
+                        <p class="card-text text-muted flex-grow-1">
+                            Consulta la lista de alumnos escolarizados, registra nuevos alumnos y administra su información de contacto.
+                        </p>
+                        <a asp-controller="Alumno" asp-action="Index" class="btn btn-outline-primary w-100 mt-3">Ver Alumnos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-success">💉 Registros de Vacunación</h5>
+                        <p class="card-text text-muted flex-grow-1">
+                            Lleva el control de las dosis aplicadas por alumno, fecha, lote de vacuna y observaciones.
+                        </p>
+                        <a asp-controller="RegistroVacunacion" asp-action="Index" class="btn btn-outline-success w-100 mt-3">Ver Registros</a>
+                    </div>
+                </div>
+            </div>
+
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-info">🏫 Gestión de Escuelas</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Administra los establecimientos educativos asociados y sube imágenes de cada escuela.
+                            </p>
+                            <a asp-controller="Escuela" asp-action="Index" class="btn btn-outline-info w-100 mt-3">Ver Escuelas</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-warning">🛡️ Gestión de Vacunas</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Registra las vacunas disponibles en el sistema, detallando su descripción y tipo.
+                            </p>
+                            <a asp-controller="Vacuna" asp-action="Index" class="btn btn-outline-warning w-100 mt-3">Ver Vacunas</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold text-danger">👤 Usuarios y Agentes</h5>
+                            <p class="card-text text-muted flex-grow-1">
+                                Da de alta nuevos agentes sanitarios y administradores en el sistema.
+                            </p>
+                            <a asp-controller="Usuario" asp-action="Index" class="btn btn-outline-danger w-100 mt-3">Ver Usuarios</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-5 mb-4 bg-primary text-white rounded-3 shadow-lg">
+            <div class="container-fluid py-5 text-center">
+                <h1 class="display-4 fw-bold mb-3">Sistema de Vacunación Escolar</h1>
+                <p class="col-md-8 mx-auto fs-5 mb-4">
+                    Plataforma centralizada para el registro, seguimiento y control de vacunas aplicadas a los alumnos en establecimientos educativos.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-light btn-lg px-4 me-sm-3 fw-bold text-primary">Iniciar Sesión</a>
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-light btn-lg px-4">Registrarse</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Escuelas</h5>
-                    <p class="card-text">Administre las escuelas, su información de contacto y las fotos asociadas.</p>
-                    <a asp-controller="Escuela" asp-action="Index" class="btn btn-primary">Ir a Escuelas</a>
+
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+            <div class="feature col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-primary text-white fs-2 mb-3 rounded-circle" style="width: 60px; height: 60px;">
+                    📝
                 </div>
+                <h4 class="fw-bold">Registro Ágil</h4>
+                <p class="text-muted">Carga rápida de alumnos y dosis aplicadas directamente en la escuela.</p>
+            </div>
+            <div class="feature col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-success text-white fs-2 mb-3 rounded-circle" style="width: 60px; height: 60px;">
+                    🛡️
+                </div>
+                <h4 class="fw-bold">Seguridad y Roles</h4>
+                <p class="text-muted">Acceso seguro diferenciando las funciones de Administradores y Agentes Sanitarios.</p>
+            </div>
+            <div class="feature col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-info text-white fs-2 mb-3 rounded-circle" style="width: 60px; height: 60px;">
+                    📊
+                </div>
+                <h4 class="fw-bold">Control Estadístico</h4>
+                <p class="text-muted">Visualización rápida y clara del avance de las campañas de vacunación.</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Vacunación</h5>
-                    <p class="card-text">Lleve un registro de las vacunas aplicadas a los alumnos, las dosis y las fechas de aplicación.</p>
-                    <a asp-controller="RegistroVacunacion" asp-action="Index" class="btn btn-primary">Ir a Registros</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>
-

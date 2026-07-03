@@ -1,36 +1,108 @@
 @model Escuela
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalle de la Escuela";
 }
 
-<h1>Details</h1>
+<div class="container py-4">
+    <div class="row">
+        <!-- Detalle de la Escuela -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">🏫 Detalle de la Escuela</h4>
+                </div>
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.8rem;">Nombre de la Escuela</h6>
+                            <p class="fs-4 fw-bold text-primary mb-0">@Model.Nombre</p>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <h6 class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.8rem;">Número de Escuela</h6>
+                                <p class="fs-5 mb-0">@(Model.Numero.HasValue ? Model.Numero.Value.ToString() : "N/D")</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <h6 class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.8rem;">Dirección</h6>
+                                <p class="fs-5 mb-0">@(string.IsNullOrEmpty(Model.Direccion) ? "Sin dirección" : Model.Direccion)</p>
+                            </div>
+                        </div>
+                    </div>
 
-<div>
-    <h4>Escuela</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Numero)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Numero)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Direccion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Direccion)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.EscuelaID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                    <div class="d-flex gap-2 border-top pt-3 mt-4">
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Agente"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.EscuelaID" class="btn btn-primary">Editar Escuela</a>
+                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary">Volver a la Lista</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galería de Fotos y Carga -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-header bg-dark text-white py-3">
+                    <h4 class="mb-0">📸 Galería de Fotos</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Formulario de carga (Solo Administrador) -->
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <div class="bg-light rounded p-3 mb-4 border">
+                            <h5 class="fw-bold mb-3" style="font-size: 1rem;">Agregar Foto de la Escuela</h5>
+                            <form asp-action="AgregarFoto" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="EscuelaID" value="@Model.EscuelaID" />
+                                
+                                <div class="mb-3">
+                                    <label class="form-label text-muted" style="font-size: 0.85rem;">Seleccionar Archivo</label>
+                                    <input type="file" name="FotoFile" class="form-control form-control-sm" accept="image/*" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted" style="font-size: 0.85rem;">Descripción de la foto</label>
+                                    <input type="text" name="Descripcion" class="form-control form-control-sm" placeholder="Ej: Fachada, Patio interno..." />
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-sm w-100">Subir Foto</button>
+                            </form>
+                        </div>
+                    }
+
+                    <!-- Lista de Fotos -->
+                    @if (Model.Fotos != null && Model.Fotos.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var foto in Model.Fotos)
+                            {
+                                <div class="col-sm-6">
+                                    <div class="card h-100 border shadow-sm">
+                                        <img src="@foto.FotoURL" class="card-img-top" alt="@foto.Descripcion" style="height: 140px; object-fit: cover;" />
+                                        <div class="card-body p-2 d-flex flex-column justify-content-between">
+                                            <p class="card-text small text-muted mb-2">@(string.IsNullOrEmpty(foto.Descripcion) ? "Sin descripción" : foto.Descripcion)</p>
+                                            @if (User.IsInRole("Administrador"))
+                                            {
+                                                <form asp-action="EliminarFoto" asp-route-id="@foto.FotoID" method="post" class="mt-auto">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-1" onclick="return confirm('¿Seguro que deseas eliminar esta foto?');">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-5">
+                            <p class="mb-0">No hay fotos registradas para esta escuela.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

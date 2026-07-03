@@ -1,57 +1,54 @@
 @model Usuario
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Eliminar Usuario";
 }
 
-<h1>Delete</h1>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-danger text-white text-center py-3">
+                <h4 class="mb-0">Eliminar Usuario</h4>
+            </div>
+            <div class="card-body p-4 text-center">
+                <div class="text-danger mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                </div>
+                
+                <h5 class="fw-bold mb-3 text-dark">¿Estás seguro de que deseas eliminar este usuario?</h5>
+                <p class="text-muted mb-4">Esta acción es irreversible y eliminará permanentemente al usuario del sistema.</p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Usuario</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Apellido)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Apellido)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DNI)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DNI)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Matricula)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Matricula)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rol)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rol)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="UsuarioID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+                <div class="bg-light rounded p-3 mb-4 text-start">
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold text-muted">Nombre:</div>
+                        <div class="col-8">@Model.Nombre @Model.Apellido</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold text-muted">DNI:</div>
+                        <div class="col-8">@Model.DNI</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold text-muted">Matrícula:</div>
+                        <div class="col-8">@Model.Matricula</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold text-muted">Email:</div>
+                        <div class="col-8 text-break">@Model.Email</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 fw-bold text-muted">Rol:</div>
+                        <div class="col-8">@Model.Rol</div>
+                    </div>
+                </div>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="UsuarioID" />
+                    <button type="submit" class="btn btn-danger px-4 me-2">Eliminar Definitivamente</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
