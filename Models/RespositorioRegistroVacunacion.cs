@@ -150,6 +150,47 @@ public class RepositorioRegistroVacunacion : RepositorioBase, IRepositorioRegist
         return res;
     }
 
+    public IEnumerable<RegistroVacunacion> ObtenerPaginados(int pagina, int cantidad)
+    {
+        int offset = (pagina - 1) * cantidad;
+        var res = new List<RegistroVacunacion>();
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var sql = GetQueryBase() + " ORDER BY r.FechaAplicacion DESC LIMIT @Offset, @Cantidad";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Offset", offset);
+                command.Parameters.AddWithValue("@Cantidad", cantidad);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        res.Add(MapFromReader(reader));
+                    }
+                }
+                connection.Close();
+            }
+        }
+        return res;
+    }
+
+    public int ObtenerTotal()
+    {
+        int total = 0;
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var sql = "SELECT COUNT(*) FROM RegistrosVacunacion";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                connection.Open();
+                total = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+            }
+        }
+        return total;
+    }
+
     private string GetQueryBase()
     {
         return @"

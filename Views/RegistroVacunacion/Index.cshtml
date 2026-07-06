@@ -2,58 +2,115 @@
 
 @{
     ViewData["Title"] = "Registros de Vacunación";
+    int paginaActual = ViewBag.PaginaActual ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
 }
 
-<h1>Registros de Vacunación</h1>
+<div class="container mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold m-0">Registros de Vacunación</h2>
+            <p class="text-muted m-0">Historial de vacunas aplicadas a los alumnos del sistema.</p>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaAplicacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumeroDosis)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Alumno)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Vacuna)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Escuela)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaAplicacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumeroDosis)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Alumno.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vacuna.NombreVacuna)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Escuela.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RegistroID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RegistroID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RegistroID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Fecha Aplicación</th>
+                        <th>Alumno</th>
+                        <th>DNI Alumno</th>
+                        <th>Vacuna</th>
+                        <th>Dosis N°</th>
+                        <th>Lugar / Escuela</th>
+                        <th>Agente Aplicador</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                No se encontraron registros de vacunación.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    @item.FechaAplicacion.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark">@item.Alumno?.Apellido, @item.Alumno?.Nombre</span>
+                                </td>
+                                <td>
+                                    @item.Alumno?.DNI
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        @item.Vacuna?.NombreVacuna
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        Dosis @item.NumeroDosis
+                                    </span>
+                                </td>
+                                <td>
+                                    @item.Escuela?.Nombre
+                                </td>
+                                <td class="small text-muted">
+                                    @item.Agente?.Apellido, @item.Agente?.Nombre
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <a class="btn btn-outline-info" asp-controller="Alumno" asp-action="Details" asp-route-id="@item.AlumnoID">
+                                            Ver Alumno
+                                        </a>
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.RegistroID">
+                                                Eliminar
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (totalPaginas > 1)
+        {
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-0">
+                <div class="text-muted small">
+                    Página @paginaActual de @totalPaginas
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual - 1)">Anterior</a>
+                        </li>
+                        @for (int i = 1; i <= totalPaginas; i++)
+                        {
+                            <li class="page-item @(paginaActual == i ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-pagina="@i">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual + 1)">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>

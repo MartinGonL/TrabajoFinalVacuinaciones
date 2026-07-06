@@ -161,4 +161,12 @@ public class EscuelaController : Controller
         var resultado = _repoEscuela.BuscarPorNombre(q);
         return Ok(resultado);
     }
+
+    [HttpGet("api/escuelas")]
+    [Produces("application/json")]
+    public IActionResult ObtenerEscuelas()
+    {
+        var resultado = _repoEscuela.ObtenerTodos();
+        return Ok(resultado);
+    }
 }

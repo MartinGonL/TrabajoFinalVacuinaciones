@@ -18,10 +18,15 @@ public class RegistroVacunacionController : Controller
         _repoEscuela = repoEscuela;
     }
 
-    // GET: /RegistroVacunacion
-    public IActionResult Index()
+    // GET: /RegistroVacunacion?pagina=1
+    public IActionResult Index(int pagina = 1)
     {
-        var lista = _repoRegistro.ObtenerTodos();
+        int cantidadPorPagina = 10;
+        var total = _repoRegistro.ObtenerTotal();
+        ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+        ViewBag.PaginaActual = pagina;
+
+        var lista = _repoRegistro.ObtenerPaginados(pagina, cantidadPorPagina);
         return View(lista);
     }
     

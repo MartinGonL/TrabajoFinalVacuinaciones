@@ -6,4 +6,6 @@ public interface IRepositorioRegistroVacunacion
     IEnumerable<RegistroVacunacion> ObtenerTodos();
     RegistroVacunacion? ObtenerPorId(int id);
     IEnumerable<RegistroVacunacion> ObtenerPorAlumnoId(int alumnoId);
+    IEnumerable<RegistroVacunacion> ObtenerPaginados(int pagina, int cantidad);
+    int ObtenerTotal();
 }
