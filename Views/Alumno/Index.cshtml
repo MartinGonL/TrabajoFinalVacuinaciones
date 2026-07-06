@@ -72,6 +72,9 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group btn-group-sm">
+                                <a :href="'/RegistroVacunacion/Create?alumnoId=' + alumno.alumnoID" class="btn btn-outline-success">
+                                    Vacunar
+                                </a>
                                 <button class="btn btn-outline-primary" @@click="abrirModalEditar(alumno)">
                                     Editar
                                 </button>

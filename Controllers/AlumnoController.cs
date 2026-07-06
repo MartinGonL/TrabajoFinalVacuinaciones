@@ -113,10 +113,22 @@ public class AlumnoController : Controller
     [HttpGet("api/alumnos")]
     [Produces("application/json")]
     [Authorize(Roles = "Administrador,Agente")]
-    public IActionResult ObtenerAlumnosApi([FromQuery] int pagina = 1)
+    public IActionResult ObtenerAlumnosApi([FromQuery] int pagina = 1, [FromQuery] string? q = null)
     {
         try
         {
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var termino = q.Trim().ToLower();
+                var resultados = _repoAlumno.ObtenerTodos()
+                    .Where(a => a.Nombre.ToLower().Contains(termino) || 
+                                a.Apellido.ToLower().Contains(termino) || 
+                                a.DNI.Contains(termino))
+                    .Take(10)
+                    .ToList();
+                return Ok(resultados);
+            }
+
             int cantidadPorPagina = 10;
             var total = _repoAlumno.ObtenerTotal();
             var totalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);

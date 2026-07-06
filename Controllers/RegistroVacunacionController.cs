@@ -30,22 +30,27 @@ public class RegistroVacunacionController : Controller
         return View(lista);
     }
     
-    // GET: /RegistroVacunacion/Registrar/5 (id = AlumnoID)
-    public IActionResult Create(int alumnoId)
+    // GET: /RegistroVacunacion/Create
+    public IActionResult Create(int? alumnoId = null)
     {
-        var alumno = _repoAlumno.ObtenerPorId(alumnoId);
-        if (alumno == null) return NotFound();
-
-        ViewBag.Alumno = alumno;
         ViewBag.Vacunas = _repoVacuna.ObtenerTodos();
-        ViewBag.Escuelas = _repoEscuela.ObtenerTodos(); // Lugares de vacunación
+        ViewBag.Escuelas = _repoEscuela.ObtenerTodos();
 
         var registro = new RegistroVacunacion
         {
-            AlumnoID = alumnoId,
-            FechaAplicacion = DateTime.Now,
-            LugarVacunacion_EscuelaID = alumno.EscuelaID // Sugerir la escuela del alumno
+            FechaAplicacion = DateTime.Now
         };
+
+        if (alumnoId.HasValue)
+        {
+            var alumno = _repoAlumno.ObtenerPorId(alumnoId.Value);
+            if (alumno != null)
+            {
+                ViewBag.Alumno = alumno;
+                registro.AlumnoID = alumnoId.Value;
+                registro.LugarVacunacion_EscuelaID = alumno.EscuelaID;
+            }
+        }
         
         return View(registro);
     }

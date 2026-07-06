@@ -48,7 +48,8 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.AlumnoID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.AlumnoID" class="btn btn-primary">Editar Alumno</a> |
+    <a asp-controller="RegistroVacunacion" asp-action="Create" asp-route-alumnoId="@Model.AlumnoID" class="btn btn-success">Registrar Vacunación</a> |
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver al Listado</a>
 </div>
