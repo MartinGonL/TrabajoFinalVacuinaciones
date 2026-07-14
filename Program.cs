@@ -1,5 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,16 +25,37 @@ builder.Services.AddTransient<IRepositorioRegistroVacunacion>(sp => new Reposito
 // Auth service
 builder.Services.AddTransient<IAuthService, AuthService>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.LoginPath        = "/Auth/Login";
+    options.LogoutPath       = "/Auth/Logout";
+    options.AccessDeniedPath = "/Home/AccesoDenegado"; 
+    options.Cookie.Name      = "Vacunacion.Auth"; 
+    options.Cookie.HttpOnly  = true;
+    options.SlidingExpiration = true;        
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecretaDeVacunacionDeMinimo32CaracteresDeLargo!";
+    var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "VacunacionEscolarApi";
+    var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "VacunacionEscolarApiUsers";
+
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.LoginPath        = "/Auth/Login";
-        options.LogoutPath       = "/Auth/Logout";
-        options.AccessDeniedPath = "/Home/AccesoDenegado"; 
-        options.Cookie.Name      = "Vacunacion.Auth"; 
-        options.Cookie.HttpOnly  = true;
-        options.SlidingExpiration = true;        
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -63,5 +87,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();
