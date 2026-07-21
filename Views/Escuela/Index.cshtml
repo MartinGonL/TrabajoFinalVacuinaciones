@@ -35,8 +35,9 @@
                 <table class="table table-hover align-middle mb-0" id="tablaEscuelas">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4" style="width: 15%;">N°</th>
-                            <th style="width: 45%;">Nombre de la Institución</th>
+                            <th class="ps-4" style="width: 10%;">Foto</th>
+                            <th style="width: 10%;">N°</th>
+                            <th style="width: 40%;">Nombre de la Institución</th>
                             <th style="width: 25%;">Dirección</th>
                             <th class="text-end pe-4" style="width: 15%;">Acciones</th>
                         </tr>
@@ -44,8 +45,21 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
+                            var primeraFoto = item.Fotos?.FirstOrDefault()?.FotoURL;
                             <tr>
-                                <td class="ps-4 fw-bold text-muted">@(item.Numero.HasValue ? item.Numero.Value.ToString() : "-")</td>
+                                <td class="ps-4">
+                                    @if (!string.IsNullOrEmpty(primeraFoto))
+                                    {
+                                        <img src="@primeraFoto" alt="@item.Nombre" class="rounded shadow-sm" style="width: 45px; height: 45px; object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center border text-muted" style="width: 45px; height: 45px;">
+                                            🏫
+                                        </div>
+                                    }
+                                </td>
+                                <td class="fw-bold text-muted">@(item.Numero.HasValue ? item.Numero.Value.ToString() : "-")</td>
                                 <td class="fw-bold text-primary">@item.Nombre</td>
                                 <td>@item.Direccion</td>
                                 <td class="text-end pe-4">

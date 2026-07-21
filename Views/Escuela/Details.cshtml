@@ -49,8 +49,7 @@
                     <h4 class="mb-0">📸 Galería de Fotos</h4>
                 </div>
                 <div class="card-body p-4">
-                    <!-- Formulario de carga (Solo Administrador) -->
-                    @if (User.IsInRole("Administrador"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Agente"))
                     {
                         <div class="bg-light rounded p-3 mb-4 border">
                             <h5 class="fw-bold mb-3" style="font-size: 1rem;">Agregar Foto de la Escuela</h5>
@@ -59,8 +58,13 @@
                                 
                                 <div class="mb-3">
                                     <label class="form-label text-muted" style="font-size: 0.85rem;">Seleccionar Archivo</label>
-                                    <input type="file" name="FotoFile" class="form-control form-control-sm" accept="image/*" required />
+                                    <input type="file" name="FotoFile" id="fotoEscuelaInput" class="form-control form-control-sm" accept="image/*" required onchange="previewEscuelaFoto(this)" />
                                 </div>
+
+                                <div id="escuelaFotoPreviewContainer" class="mb-3 text-center d-none">
+                                    <img id="escuelaFotoPreview" src="#" alt="Vista previa" class="img-thumbnail rounded shadow-sm" style="max-height: 150px; object-fit: cover;" />
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label text-muted" style="font-size: 0.85rem;">Descripción de la foto</label>
                                     <input type="text" name="Descripcion" class="form-control form-control-sm" placeholder="Ej: Fachada, Patio interno..." />
@@ -78,10 +82,12 @@
                             {
                                 <div class="col-sm-6">
                                     <div class="card h-100 border shadow-sm">
-                                        <img src="@foto.FotoURL" class="card-img-top" alt="@foto.Descripcion" style="height: 140px; object-fit: cover;" />
+                                        <a href="@foto.FotoURL" target="_blank" title="Ver tamaño completo">
+                                            <img src="@foto.FotoURL" class="card-img-top" alt="@foto.Descripcion" style="height: 140px; object-fit: cover;" />
+                                        </a>
                                         <div class="card-body p-2 d-flex flex-column justify-content-between">
                                             <p class="card-text small text-muted mb-2">@(string.IsNullOrEmpty(foto.Descripcion) ? "Sin descripción" : foto.Descripcion)</p>
-                                            @if (User.IsInRole("Administrador"))
+                                            @if (User.IsInRole("Administrador") || User.IsInRole("Agente"))
                                             {
                                                 <form asp-action="EliminarFoto" asp-route-id="@foto.FotoID" method="post" class="mt-auto">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-1" onclick="return confirm('¿Seguro que deseas eliminar esta foto?');">
@@ -106,3 +112,22 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function previewEscuelaFoto(input) {
+            var container = document.getElementById('escuelaFotoPreviewContainer');
+            var img = document.getElementById('escuelaFotoPreview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    container.classList.remove('d-none');
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                container.classList.add('d-none');
+            }
+        }
+    </script>
+}

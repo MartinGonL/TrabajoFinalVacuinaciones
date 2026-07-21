@@ -27,6 +27,12 @@ public class EscuelaController : Controller
         {
             lista = _repoEscuela.ObtenerTodos();
         }
+
+        foreach (var esc in lista)
+        {
+            esc.Fotos = _repoFoto.ObtenerPorEscuelaId(esc.EscuelaID).ToList();
+        }
+
         return View(lista);
     }
 
@@ -36,7 +42,6 @@ public class EscuelaController : Controller
         var escuela = _repoEscuela.ObtenerPorId(id);
         if (escuela == null) return NotFound();
         
-        // Cargar fotos
         escuela.Fotos = _repoFoto.ObtenerPorEscuelaId(id).ToList();
         return View(escuela);
     }
@@ -110,21 +115,23 @@ public class EscuelaController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    
     // POST: /Escuela/AgregarFoto
     [HttpPost]
-    [Authorize(Roles = "Administrador")]
-    public IActionResult AgregarFoto(FotoEscuela foto)
+    [Authorize(Roles = "Administrador, Agente")]
+    public async Task<IActionResult> AgregarFoto(FotoEscuela foto)
     {
-        if (foto.FotoFile != null)
+        if (foto.FotoFile != null && foto.FotoFile.Length > 0)
         {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string wwwRootPath = _webHostEnvironment.WebRootPath ?? "wwwroot";
+            string uploadsFolder = Path.Combine(wwwRootPath, "uploads", "escuelas");
+            Directory.CreateDirectory(uploadsFolder);
+
             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(foto.FotoFile.FileName);
-            string path = Path.Combine(wwwRootPath, "uploads/escuelas", fileName);
+            string path = Path.Combine(uploadsFolder, fileName);
             
             using (var fileStream = new FileStream(path, FileMode.Create))
             {
-                foto.FotoFile.CopyTo(fileStream);
+                await foto.FotoFile.CopyToAsync(fileStream);
             }
             foto.FotoURL = "/uploads/escuelas/" + fileName;
             _repoFoto.Alta(foto);
@@ -134,14 +141,13 @@ public class EscuelaController : Controller
 
     // POST: /Escuela/EliminarFoto/5
     [HttpPost]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador, Agente")]
     public IActionResult EliminarFoto(int id)
     {
         var foto = _repoFoto.ObtenerPorId(id);
         if (foto == null) return NotFound();
 
-        // Eliminar archivo físico
-        string wwwRootPath = _webHostEnvironment.WebRootPath;
+        string wwwRootPath = _webHostEnvironment.WebRootPath ?? "wwwroot";
         string path = Path.Combine(wwwRootPath, foto.FotoURL.TrimStart('/'));
         if (System.IO.File.Exists(path))
         {
@@ -150,23 +156,5 @@ public class EscuelaController : Controller
         
         _repoFoto.Baja(id);
         return RedirectToAction(nameof(Details), new { id = foto.EscuelaID });
-    }
-    
-    // --- API PARA BÚSQUEDA AJAX ---
-
-    [HttpGet("api/escuelas/buscar")]
-    [Produces("application/json")]
-    public IActionResult BuscarEscuelas(string q)
-    {
-        var resultado = _repoEscuela.BuscarPorNombre(q);
-        return Ok(resultado);
-    }
-
-    [HttpGet("api/escuelas")]
-    [Produces("application/json")]
-    public IActionResult ObtenerEscuelas()
-    {
-        var resultado = _repoEscuela.ObtenerTodos();
-        return Ok(resultado);
     }
 }
